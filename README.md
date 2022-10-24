@@ -1,2 +1,2 @@
 # Cub3D
-Little game in first person using "c".
+Cub3D project from 42 Cursus.
