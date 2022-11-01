@@ -6,7 +6,7 @@
 /*   By: zpalfi <zpalfi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 12:07:15 by zpalfi            #+#    #+#             */
-/*   Updated: 2022/10/26 12:16:24 by zpalfi           ###   ########.fr       */
+/*   Updated: 2022/10/31 15:11:58 by zpalfi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,30 @@
 
 void	get_height(t_data *data, char *filename, int i, int j)
 {
-	int		fd;
 	char	*line;
 
-	fd = open(filename, O_RDONLY, 0);
-	if (!fd)
+	data->fd2 = open(filename, O_RDONLY, 0);
+	if (data->fd2 < 0)
 	{
 		printf("File couldn't be opened!\n");
 		return ;
 	}
 	while (42)
 	{
-		line = get_next_line(fd);
+		line = get_next_line(data->fd2);
 		if (!line)
 			break ;
 		if (j < i)
-		{
 			j++;
-			continue ;
+		else
+		{
+			if ((int)ft_strlen(line) > data->width)
+				data->width = ft_strlen(line);
+			data->height++;
 		}
-		if ((int)ft_strlen(line) > data->width)
-			data->width = ft_strlen(line);
-		data->height++;
+		free(line);
 	}
+	close(data->fd2);
 }
 
 void	malloc_map(t_data *data)
@@ -46,7 +47,7 @@ void	malloc_map(t_data *data)
 	i = 0;
 	while (i < data->height + 2)
 	{
-		data->map[i] = malloc(sizeof(char) * (data->width + 2));
+		data->map[i] = malloc(sizeof(char) * (data->width + 3));
 		i++;
 	}
 	data->map[i] = NULL;
