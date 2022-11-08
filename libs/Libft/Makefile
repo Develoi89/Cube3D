@@ -6,7 +6,7 @@
 #    By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/17 14:18:26 by zpalfi            #+#    #+#              #
-#    Updated: 2022/11/06 12:47:52 by develoi89        ###   ########.fr        #
+#    Updated: 2022/11/08 18:58:49 by develoi89        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,7 +62,7 @@ $(NAME): $(OBJ) include/libft.h
 
 .PHONY : clean
 clean:
-	@rm -f *.o
+	@rm -f src/*.o
 
 .PHONY : fclean
 fclean: clean

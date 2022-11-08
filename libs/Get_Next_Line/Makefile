@@ -6,7 +6,7 @@
 #    By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/14 13:15:04 by zpalfi            #+#    #+#              #
-#    Updated: 2022/11/06 12:55:26 by develoi89        ###   ########.fr        #
+#    Updated: 2022/11/08 18:58:15 by develoi89        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ $(NAME): $(OBJ) include/get_next_line.h
 
 .PHONY : clean
 clean:
-	@rm -f *.o
+	@rm -f src/*.o
 
 .PHONY : fclean
 fclean: clean
