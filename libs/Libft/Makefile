@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: zpalfi <zpalfi@student.42.fr>              +#+  +:+       +#+         #
+#    By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/17 14:18:26 by zpalfi            #+#    #+#              #
-#    Updated: 2022/10/24 15:48:28 by zpalfi           ###   ########.fr        #
+#    Updated: 2022/11/06 12:47:52 by develoi89        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,7 +53,7 @@ SRC		=	src/ft_atoi.c \
 			src/ft_lstlast.c \
 			
 OBJ		= $(SRC:%.c=%.o)
-CFLAGS	= -Wall -Wextra -Werror -I include
+CFLAGS	= -Wall -Wextra -Werror
 CC		= gcc
 
 $(NAME): $(OBJ) include/libft.h

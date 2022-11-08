@@ -3,22 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   del_spaces.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zpalfi <zpalfi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 12:08:50 by zpalfi            #+#    #+#             */
-/*   Updated: 2022/11/02 15:27:09 by zpalfi           ###   ########.fr       */
+/*   Updated: 2022/11/06 12:41:00 by develoi89        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../include/cub3d.h"
 
 char	*del_spaces(char *line, int i)
 {
 	int		j;
-	int		z;
 	char	*newline;
 
-	z = i;
 	while (line[i] != '\0' && (line[i] == ' ' || line[i] == '\n'
 			|| line[i] == '\t' || line[i] == '\v'
 			|| line[i] == '\f' || line[i] == '\r'))

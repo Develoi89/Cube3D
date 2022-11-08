@@ -3,143 +3,176 @@
 /*                                                        :::      ::::::::   */
 /*   rendering.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zpalfi <zpalfi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:48:08 by zpalfi            #+#    #+#             */
-/*   Updated: 2022/11/02 18:29:05 by zpalfi           ###   ########.fr       */
+/*   Updated: 2022/11/06 12:38:40 by develoi89        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../include/cub3d.h"
 
-int	key_handler(int key, t_data *data)
+static void	init_values(t_data *data, int x);
+static void	find_hit_point(t_data *data);
+static void	print_walls(t_data *data, int x);
+
+/*
+	The rendering function contains the while loop that implements the
+		raytracing. This loop is called for every 1-pixel width vertical-line.
+		In this loop we have 3 steps:
+			- init_values()
+			- find_hit_point()
+			- print_walls()
+*/
+
+void	move(t_data *data)
 {
-	if (key == 124)
+	double	olddirx;
+	double	oldplanex;
+
+	if (data->vr == 1)
 	{
-		data->dir += 8;
-		if (data->dir >= 360 || data->dir < 0)
-			data->dir = 0;
+		olddirx = data->dirx;
+		data->dirx = data->dirx * cos(-0.04) - data->diry * sin(-0.04);
+		data->diry = olddirx * sin(-0.04) + data->diry * cos(-0.04);
+		oldplanex = data->planex;
+		data->planex = data->planex * cos(-0.04) - data->planey * sin(-0.04);
+		data->planey = oldplanex * sin(-0.04) + data->planey * cos(-0.04);
 	}
-	else if (key == 123)
+	if (data->vl == 1)
 	{
-		data->dir -= 8;
-		if (data->dir >= 360 || data->dir <= -1)
-			data->dir = 359;
+		olddirx = data->dirx;
+		data->dirx = data->dirx * cos(0.04) - data->diry * sin(0.04);
+		data->diry = olddirx * sin(0.04) + data->diry * cos(0.04);
+		oldplanex = data->planex;
+		data->planex = data->planex * cos(0.04) - data->planey * sin(0.04);
+		data->planey = oldplanex * sin(0.04) + data->planey * cos(0.04);
 	}
-	return (0);
+}
+
+int	rendering(t_data *data)
+{
+	int	x;
+
+	x = -1;
+	while (++x < WIDTH)
+	{
+		init_values(data, x);
+		find_hit_point(data);
+		print_walls(data, x);
+	}
+	mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, 0, 0);
+	move(data);
+	return (1);
 }
 
 /*
-		y = -1;
-		while (++y < 1920)
-		{
-			if (x < 1080 / 2)
-				mlx_pixel_put(data->mlx_ptr, data->win_ptr, y, x,
-					(get_color(data->c, 0, -1, 0) << 16
-						| get_color(data->c, 1, -1, 0) << 8
-						| get_color(data->c, 2, -1, 0)));
-			else
-				mlx_pixel_put(data->mlx_ptr, data->win_ptr, y, x,
-					(get_color(data->f, 0, -1, 0) << 16
-						| get_color(data->f, 1, -1, 0) << 8
-						| get_color(data->f, 2, -1, 0)));
-		}
+	In init_values() we initialize all the values that we need to find the hit
+		point in order to calculate data->perpwalldist.
+	Perpwalldist is the vector that goes frome the hit_poiny in a wall to the
+		closest point in the camera plane.
+	To calculate perpwalldist, we need first to know a few things.
+	 - Raydirs, they are all the 1920 vectors (WIDTH OF THE CAMERA) that will give
+	 	us the information to translate the map in 1 line of pixels per raydir vector.
+	 - Deltadist, is the vector that goes from one border of a box-map, to another.
+	  	Deltadistx is for the x borders, delatadisty for de y borders.
+	 - Sidedist, is the same as deltadist but is only the first one, that goes from
+	 	the player to the first border.
 */
 
-void	rendering(t_data *data, int x, int y)
+static void	init_values(t_data *data, int x)
 {
-	(void) y;
-	data->mlx_ptr = mlx_init();
-	if (!data->mlx_ptr)
-		return ;
-	data->win_ptr = mlx_new_window(data->mlx_ptr,
-			WIDTH, HEIGHT, "Cub3D");
-	if (!data->win_ptr)
-		return ;
-	while (++x < WIDTH)
+	data->hit = 0;
+	data->camerax = (2 * x) / (double)WIDTH - 1;
+	data->raydirx = data->dirx + data->planex * data->camerax;
+	data->raydiry = data->diry + data->planey * data->camerax;
+	data->mapx = (int)data->posx;
+	data->mapy = (int)data->posy;
+	data->deltadistx = fabs(1 / data->raydirx);
+	data->deltadisty = fabs(1 / data->raydiry);
+	data->stepx = 1;
+	data->stepy = 1;
+	if (data->raydirx < 0)
 	{
-		printf("%f %f %f %f - ", data->dirx, data->diry, data->planex, data->planey);
-		data->hit = 0;
-		data->camerax = 2 * x / (double)WIDTH - 1;
-		data->raydirx = data->dirx + data->planex * data->camerax;
-		data->raydiry = data->diry + data->planey * data->camerax;
-		data->mapx = (int)data->posx;
-		data->mapy = (int)data->posy;
-		// printf("%f %f %f\n", data->camerax * data->planex, data->raydirx, data->raydiry);
-		data->deltadistx = fabs(1 / data->raydirx);
-		data->deltadisty = fabs(1 / data->raydiry);
-		if (data->dirx < 0)
-		{
-			data->stepx = -1;
-			data->sidedistx = (data->posx - data->mapx) * data->deltadistx;
-		}
-		else
-		{
-			data->stepx = 1;
-			data->sidedistx = (data->mapx + 1.0 - data->posx)
-				* data->deltadistx;
-		}
-		if (data->diry < 0)
-		{
-			data->stepy = -1;
-			data->sidedisty = (data->posy - data->mapy) * data->deltadisty;
-		}
-		else
-		{
-			data->stepy = 1;
-			data->sidedisty = (data->mapy + 1.0 - data->posy) * data->deltadisty;
-		}
-		// printf("Hola %f %f %f %f\n", data->sidedistx, data->sidedisty, data->deltadistx, data->deltadisty);
-		while (data->hit == 0)
-		{
-			// printf("%d %d\n", data->mapx, data->mapy);
-			if (data->sidedistx < data->sidedisty)
-			{
-				data->sidedistx += data->deltadistx;
-				data->mapx += data->stepx;
-				data->side = 0;
-			}
-			else
-			{
-				data->sidedisty += data->deltadisty;
-				data->mapy += data->stepy;
-				data->side = 1;
-			}
-			if (data->map[data->mapy][data->mapx] == '1')
-			{
-				// printf("%c  %d  %d\n", data->map[data->mapy][data->mapx], data->mapy, data->mapx);
-				data->hit = 1;
-			}
-		}
-		if (data->side == 0)
-		{
-			data->perpwalldist = (data->mapx - data->posx + (1 - data->stepx) / 2) / data->raydirx;
-		}
-		else
-		{
-			data->perpwalldist = (data->mapy - data->posy + (1 - data->stepy) / 2) / data->raydiry;
-		}
-		data->line = (int)(HEIGHT / data->perpwalldist);
-		data->drawstart = (-data->line / 2) + (HEIGHT / 2);
-		// if (data->drawstart < 0)
-		// 	data->drawstart = 0;
-		data->drawend = (data->line / 2) + (HEIGHT / 2);
-		// if (data->drawend >= HEIGHT)
-		// 	data->drawend = 0;
-		y = data->drawstart - 1;
-		while (++y < data->drawend)
-		{
-			if (data->side == 0)
-				mlx_pixel_put(data->mlx_ptr, data->win_ptr, x, y, (get_color(data->f, 0, -1, 0) << 16
-						| get_color(data->f, 1, -1, 0) << 8
-						| get_color(data->f, 2, -1, 0)));
-			else
-				mlx_pixel_put(data->mlx_ptr, data->win_ptr, x, y,(get_color(data->c, 0, -1, 0) << 16
-						| get_color(data->c, 1, -1, 0) << 8
-						| get_color(data->c, 2, -1, 0)));
-		}
-		printf("--> %d %d\n", data->drawstart, data->drawend);
+		data->stepx = -1;
+		data->sidedistx = (data->posx - data->mapx) * data->deltadistx;
 	}
-	mlx_hook(data->win_ptr, 2, 0, key_handler, &data);
-	mlx_loop(data->mlx_ptr);
+	else
+		data->sidedistx = (data->mapx + 1.0 - data->posx) * data->deltadistx;
+	if (data->raydiry < 0)
+	{
+		data->stepy = -1;
+		data->sidedisty = (data->posy - data->mapy) * data->deltadisty;
+	}
+	else
+		data->sidedisty = (data->mapy + 1.0 - data->posy) * data->deltadisty;
+}
+
+/*
+	Once we have all the values, we can search for the hit point with a wall. To do
+		this we have to check for all the borders of box-maps. Checking if sidedistx
+		is greater than sidedisty allows us to know what border to search next
+		(x or y). Then we check if that border contains a 1 value, if that is
+		true we found a wall!
+	Now that we found a wall we can calculate perpwalldist.
+*/
+
+static void	find_hit_point(t_data *data)
+{
+	while (data->hit == 0)
+	{
+		if (data->sidedistx < data->sidedisty)
+		{
+			data->sidedistx += data->deltadistx;
+			data->mapx += data->stepx;
+			data->side = 0;
+		}
+		else
+		{
+			data->sidedisty += data->deltadisty;
+			data->mapy += data->stepy;
+			data->side = 1;
+		}
+		if (data->map[data->mapx][data->mapy] == '1')
+			data->hit = 1;
+	}
+	if (data->side == 0)
+		data->perpwalldist = (data->mapx - data->posx + (1 - data->stepx) / 2)
+			/ data->raydirx;
+	else
+		data->perpwalldist = (data->mapy - data->posy + (1 - data->stepy) / 2)
+			/ data->raydiry;
+}
+
+/*
+	Now that we have perpwalldist, we can calculate when in the vertical line
+		of pixels we have tostart printing the wall. And once done that, whe
+		first print the ceiling then the wall and last the floor.
+*/
+
+static void	print_walls(t_data *data, int x)
+{
+	int	y;
+
+	data->line = (int)(HEIGHT / data->perpwalldist);
+	data->drawstart = (-data->line / 2) + (HEIGHT / 2);
+	if (data->drawstart < 0)
+		data->drawstart = 0;
+	data->drawend = (data->line / 2) + (HEIGHT / 2);
+	if (data->drawend > HEIGHT)
+		data->drawend = 1080;
+	y = -1;
+	while (++y < data->drawstart)
+		my_mlx_pixel_put(data, x, y, data->colorc);
+	y = data->drawstart - 1;
+	while (++y < data->drawend)
+	{
+		if (data->side == 0)
+			my_mlx_pixel_put(data, x, y, data->colorw1);
+		else
+			my_mlx_pixel_put(data, x, y, data->colorw2);
+	}
+	y--;
+	while (++y < HEIGHT)
+		my_mlx_pixel_put(data, x, y, data->colorf);
 }

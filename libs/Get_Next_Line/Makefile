@@ -3,29 +3,22 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: zpalfi <zpalfi@student.42.fr>              +#+  +:+       +#+         #
+#    By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/14 13:15:04 by zpalfi            #+#    #+#              #
-#    Updated: 2022/10/24 13:54:09 by zpalfi           ###   ########.fr        #
+#    Updated: 2022/11/06 12:55:26 by develoi89        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= get_next_line.a
 
-INCLUDE_DIR	= include
-SRC_DIR		= src
-OBJ_DIR		= obj
-
-INC			= -I $(INCLUDE_DIR)
 
 SRC			= src/get_next_line.c \
 			  src/get_next_line_utils.c \
 
-CC			= gcc
-CFLAGS		= -Wall -Wextra -Werror -g $(INC)
 
 OBJ		= $(SRC:%.c=%.o)
-CFLAGS	= -Wall -Wextra -Werror -I include
+CFLAGS	= -Wall -Wextra -Werror
 CC		= gcc
 
 $(NAME): $(OBJ) include/get_next_line.h

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   save.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zpalfi <zpalfi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 11:38:58 by zpalfi            #+#    #+#             */
-/*   Updated: 2022/11/02 15:27:04 by zpalfi           ###   ########.fr       */
+/*   Updated: 2022/11/06 12:38:49 by develoi89        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../include/cub3d.h"
 
 void	save_map(t_data *data, char *line)
 {

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strrncmp.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zpalfi <zpalfi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:48:05 by zpalfi            #+#    #+#             */
-/*   Updated: 2022/10/31 13:24:10 by zpalfi           ###   ########.fr       */
+/*   Updated: 2022/11/06 12:49:17 by develoi89        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../include/libft.h"
 
 int	ft_strrncmp(const char *str, const char *str2, size_t n)
 {
