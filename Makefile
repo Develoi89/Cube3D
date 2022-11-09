@@ -3,12 +3,15 @@ CFLAGS			=	-Wall -Werror -Wextra
 
 #------------- FILES --------------#
 
-SRC				=	src/main.c \
+SRC				=	src/init.c \
+					src/main.c \
 					src/free.c \
 					src/save.c \
 					src/init.c \
+					src/move.c \
 					src/color.c \
 					src/parsers.c \
+					src/textures.c \
 					src/handlers.c \
 					src/rendering.c \
 					src/del_spaces.c \
@@ -50,8 +53,8 @@ fclean:		clean
 			${RM} ${NAME}
 			${RM} cub3d
 			make fclean -C libs/Get_Next_Line
-			make fclean -C libft
+			make fclean -C libs/libft
 
 re:			fclean all
 
-.PHONY:		all clean fclean re
+.PHONY:		all clean fclean remake 

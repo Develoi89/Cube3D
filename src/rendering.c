@@ -6,7 +6,7 @@
 /*   By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:48:08 by zpalfi            #+#    #+#             */
-/*   Updated: 2022/11/06 12:38:40 by develoi89        ###   ########.fr       */
+/*   Updated: 2022/11/09 20:38:23 by develoi89        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	init_values(t_data *data, int x);
 static void	find_hit_point(t_data *data);
-static void	print_walls(t_data *data, int x);
+static void	print_walls(t_data *data, int x, int y);
 
 /*
 	The rendering function contains the while loop that implements the
@@ -25,31 +25,6 @@ static void	print_walls(t_data *data, int x);
 			- print_walls()
 */
 
-void	move(t_data *data)
-{
-	double	olddirx;
-	double	oldplanex;
-
-	if (data->vr == 1)
-	{
-		olddirx = data->dirx;
-		data->dirx = data->dirx * cos(-0.04) - data->diry * sin(-0.04);
-		data->diry = olddirx * sin(-0.04) + data->diry * cos(-0.04);
-		oldplanex = data->planex;
-		data->planex = data->planex * cos(-0.04) - data->planey * sin(-0.04);
-		data->planey = oldplanex * sin(-0.04) + data->planey * cos(-0.04);
-	}
-	if (data->vl == 1)
-	{
-		olddirx = data->dirx;
-		data->dirx = data->dirx * cos(0.04) - data->diry * sin(0.04);
-		data->diry = olddirx * sin(0.04) + data->diry * cos(0.04);
-		oldplanex = data->planex;
-		data->planex = data->planex * cos(0.04) - data->planey * sin(0.04);
-		data->planey = oldplanex * sin(0.04) + data->planey * cos(0.04);
-	}
-}
-
 int	rendering(t_data *data)
 {
 	int	x;
@@ -59,7 +34,8 @@ int	rendering(t_data *data)
 	{
 		init_values(data, x);
 		find_hit_point(data);
-		print_walls(data, x);
+		tex_calc(data);
+		print_walls(data, x, 0);
 	}
 	mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, 0, 0);
 	move(data);
@@ -150,27 +126,28 @@ static void	find_hit_point(t_data *data)
 		first print the ceiling then the wall and last the floor.
 */
 
-static void	print_walls(t_data *data, int x)
+static void	print_walls(t_data *data, int x, int y)
 {
-	int	y;
-
 	data->line = (int)(HEIGHT / data->perpwalldist);
 	data->drawstart = (-data->line / 2) + (HEIGHT / 2);
 	if (data->drawstart < 0)
 		data->drawstart = 0;
 	data->drawend = (data->line / 2) + (HEIGHT / 2);
 	if (data->drawend > HEIGHT)
-		data->drawend = 1080;
+		data->drawend = HEIGHT;
 	y = -1;
 	while (++y < data->drawstart)
 		my_mlx_pixel_put(data, x, y, data->colorc);
+	data->step = 1.0 * data->textures[data->ti].height / data->line;
+	data->texpos = (data->drawstart - HEIGHT / 2 + data->line / 2) * data->step;
 	y = data->drawstart - 1;
 	while (++y < data->drawend)
 	{
-		if (data->side == 0)
-			my_mlx_pixel_put(data, x, y, data->colorw1);
-		else
-			my_mlx_pixel_put(data, x, y, data->colorw2);
+		data->texy = (int)data->texpos;
+		data->texpos += data->step;
+		data->color = data->textures[data->ti].addr[data->texy
+			* data->textures[data->ti].width + data->texx];
+		my_mlx_pixel_put(data, x, y, data->color);
 	}
 	y--;
 	while (++y < HEIGHT)

@@ -6,7 +6,7 @@
 /*   By: develoi89 <develoi89@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 16:46:47 by zpalfi            #+#    #+#             */
-/*   Updated: 2022/11/06 12:38:03 by develoi89        ###   ########.fr       */
+/*   Updated: 2022/11/09 20:37:52 by develoi89        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,10 @@ void	init_data_2(t_data *data)
 	data->planey = 0;
 	data->vr = 0;
 	data->vl = 0;
+	data->mf = 0;
+	data->mb = 0;
+	data->ml = 0;
+	data->mr = 0;
 }
 
 int	init_data(t_data *data, char *filename)
@@ -36,7 +40,7 @@ int	init_data(t_data *data, char *filename)
 	data->height = 0;
 	data->first = 0;
 	data->error = 0;
-	data->filename = ft_strdup(filename);
+	data->speed = 0.06;
 	data->fd = open(filename, O_RDONLY, 0);
 	if (data->fd < 0)
 	{
